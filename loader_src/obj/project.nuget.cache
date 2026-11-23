@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "3cxpIcZjlEE=",
+  "success": true,
+  "projectFilePath": "D:\\my friends are saying shut up jennie\\loader_src\\loader.csproj",
+  "expectedPackageFiles": [
+    "D:\\my friends are saying shut up jennie\\build-caches\\nuget-packages\\microsoft.netframework.referenceassemblies\\1.0.3\\microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+    "D:\\my friends are saying shut up jennie\\build-caches\\nuget-packages\\microsoft.netframework.referenceassemblies.net48\\1.0.3\\microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

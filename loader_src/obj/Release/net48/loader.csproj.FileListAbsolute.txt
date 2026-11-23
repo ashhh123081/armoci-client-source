@@ -1,0 +1,14 @@
+D:\my friends are saying shut up jennie\loader_src\obj\Release\net48\loader.csproj.AssemblyReference.cache
+D:\my friends are saying shut up jennie\loader_src\obj\Release\net48\loader.GeneratedMSBuildEditorConfig.editorconfig
+D:\my friends are saying shut up jennie\loader_src\obj\Release\net48\loader.csproj.CoreCompileInputs.cache
+D:\my friends are saying shut up jennie\loader_src\bin\Release\net48\loader.exe.config
+D:\my friends are saying shut up jennie\loader_src\bin\Release\net48\loader.exe
+D:\my friends are saying shut up jennie\loader_src\bin\Release\net48\loader.pdb
+D:\my friends are saying shut up jennie\loader_src\bin\Release\net48\Guna.UI2.dll
+D:\my friends are saying shut up jennie\loader_src\obj\Release\net48\loader.csproj.Up2Date
+D:\my friends are saying shut up jennie\loader_src\obj\Release\net48\loader.exe
+D:\my friends are saying shut up jennie\loader_src\obj\Release\net48\loader.pdb
+D:\my friends are saying shut up jennie\loader_src\loader_src\bin\Release\net48_new\loader.exe.config
+D:\my friends are saying shut up jennie\loader_src\loader_src\bin\Release\net48_new\loader.exe
+D:\my friends are saying shut up jennie\loader_src\loader_src\bin\Release\net48_new\loader.pdb
+D:\my friends are saying shut up jennie\loader_src\loader_src\bin\Release\net48_new\Guna.UI2.dll

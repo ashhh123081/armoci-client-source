@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\my friends are saying shut up jennie\\loader_src\\loader.csproj": {}
+  },
+  "projects": {
+    "D:\\my friends are saying shut up jennie\\loader_src\\loader.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\my friends are saying shut up jennie\\loader_src\\loader.csproj",
+        "projectName": "loader",
+        "projectPath": "D:\\my friends are saying shut up jennie\\loader_src\\loader.csproj",
+        "packagesPath": "D:\\my friends are saying shut up jennie\\build-caches\\nuget-packages",
+        "outputPath": "D:\\my friends are saying shut up jennie\\loader_src\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "D:\\my friends are saying shut up jennie\\loader_src\\NuGet.Config",
+          "C:\\Users\\szymu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "framework": "net48",
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net48": {
+          "framework": "net48",
+          "targetAlias": "net48",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.400\\RuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x86": {
+          "#import": []
+        }
+      }
+    }
+  }
+}
