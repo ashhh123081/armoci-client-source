@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "armoci_fabric_preview",
+  "version": "${version}",
+  "name": "Armoci Fabric Preview",
+  "description": "Independent client-side HUD migration preview. Not a full port.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["gg.armoci.fabric.ArmociClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "fabric": "*",
+    "minecraft": "1.16.5",
+    "java": ">=8"
+  }
+}
