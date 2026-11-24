@@ -1,0 +1,94 @@
+name: Fabric preview JAR
+
+on:
+  push:
+    branches: [main, fabric-port-preview]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build isolated Fabric project
+        run: bash ./gradlew -p fabric clean build --stacktrace
+      - name: Verify remapped JAR and package checksum
+        shell: bash
+        run: |
+          set -euo pipefail
+          jar="fabric/build/libs/armoci-fabric-preview-0.1.0.jar"
+          test -s "$jar"
+          mkdir -p dist
+          cp "$jar" dist/armoci-fabric-preview.jar
+          python3 - <<'PY'
+          import json, zipfile
+          with zipfile.ZipFile("dist/armoci-fabric-preview.jar") as z:
+              meta = json.loads(z.read("fabric.mod.json"))
+              assert meta["id"] == "armoci_fabric_preview"
+              names = z.namelist()
+              assert "gg/armoci/fabric/ArmociClient.class" in names
+              assert not any(n.startswith("gg/vape/") or n.lower().endswith((".dll", ".exe")) for n in names)
+          PY
+          (cd dist && sha256sum armoci-fabric-preview.jar > SHA256SUMS)
+      - uses: actions/upload-artifact@v4
+        with:
+          name: armoci-fabric-preview
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/fabric-port-preview')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: fabric-preview-rolling-release
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: armoci-fabric-preview
+          path: dist
+      - name: Publish latest successful preview
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Do not publish a stale run if the source branch advanced.
+          head="$(gh api "repos/$GH_REPO/git/ref/heads/$GITHUB_REF_NAME" --jq .object.sha)"
+          if [ "$head" != "$GITHUB_SHA" ]; then
+            echo "Skipping superseded commit"
+            exit 0
+          fi
+          tag="armoci-fabric-preview-$GITHUB_SHA"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --clobber
+          else
+            gh release create "$tag" dist/* --target "$GITHUB_SHA" --prerelease --latest=false \
+              --title "Armoci Fabric preview ${GITHUB_SHA:0:8}" \
+              --notes "Experimental 1.16.5 HUD-only port. Install Fabric API separately. Not a complete port."
+          fi
+          # Only remove older prereleases owned by this workflow, and only
+          # after the new JAR has been successfully published.
+          gh release list --limit 100 --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease and (.tagName | test("^armoci-fabric-preview-[0-9a-f]{40}$"))) | .tagName' |
+          while IFS= read -r old; do
+            if [ -n "$old" ] && [ "$old" != "$tag" ]; then
+              gh release delete "$old" --cleanup-tag --yes
+            fi
+          done
