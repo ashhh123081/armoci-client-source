@@ -1,5 +1,6 @@
 {
   "key.armoci.toggle": "Alternar HUD de Armoci",
   "key.armoci.reload": "Recargar ajustes del HUD",
-  "category.armoci": "Armoci Fabric"
+  "category.armoci": "Armoci Fabric",
+  "key.armoci.configure": "Abrir ajustes del HUD de Armoci"
 }

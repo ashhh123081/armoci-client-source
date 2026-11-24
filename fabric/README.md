@@ -11,19 +11,26 @@ network/authentication code. It uses supported Fabric client APIs only.
 From the repository root, with JDK 17 and the existing Gradle 8.8 wrapper:
 
 ```sh
-bash ./gradlew -p fabric clean build
+bash fabric/build-local.sh
 ```
 
-Install the remapped `fabric/build/libs/armoci-fabric-preview-0.1.0.jar` and
+On Windows use `fabric\build-local.bat` (or `.\gradlew.bat -p fabric localRelease`).
+The `localRelease` task builds, validates and stages a remapped JAR plus its
+SHA-256 checksum in `fabric/build/local-release/`. It does not require GitHub
+Actions, a GitHub token or repository admin access. Initial dependency downloads
+require internet. Re-run after pulling new commits; use `clean localRelease`
+if you need a fresh build.
+
+Install the staged `fabric/build/local-release/armoci-fabric-preview.jar` and
 Fabric API in a separate Minecraft 1.16.5 Fabric instance.
-No injector or external launcher is needed. F8 toggles the HUD; the settings
+No injector or external launcher is needed. F7 opens settings, F8 toggles the HUD; the settings
 reload key can be bound in Minecraft's Controls screen. Settings are stored in
 `config/armoci-fabric.properties`.
 
 ## Migration coverage
 
 Implemented: FPS display, rounded XYZ coordinates (horizontal or vertical),
-digital local clock (optional date, 12/24h), movement-key display, persistent
+digital local clock (optional date, 12/24h), movement-key display with rebound key labels, in-game HUD settings, persistent
 local settings, client lifecycle and configurable keybindings.
 
 Not implemented: original click GUI, analog clock, biome/direction indicators,
@@ -41,10 +48,10 @@ previously compiled artifacts into this build. See the root BACKDOOR_REPORT.md.
 
 1. Start a clean 1.16.5 Fabric instance with Fabric API and the preview JAR.
 2. Enter a single-player world; verify FPS, XYZ, clock and movement-key display.
-3. Verify F8, F1, F3, pause/menu hiding, rebind and reload settings.
+3. Verify F7 settings, F8, F1, F3, pause/menu hiding, rebind and reload settings.
 4. Exit and re-enter the world, then restart the game and verify persistence.
 5. Report the crash log, loader and Java versions if anything fails.
 
-The GitHub workflow publishes only this separate preview, never the old
+If enabled, the GitHub workflow publishes only this separate preview, never the old
 injection JAR or binaries. A successful build does not establish runtime
 compatibility or complete security of the original project.

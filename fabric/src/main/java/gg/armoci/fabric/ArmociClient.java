@@ -10,7 +10,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import org.lwjgl.glfw.GLFW;
@@ -23,6 +23,7 @@ public final class ArmociClient implements ClientModInitializer {
     private HudSettings settings;
     private KeyBinding toggle;
     private KeyBinding reload;
+    private KeyBinding configure;
 
     @Override
     public void onInitializeClient() {
@@ -32,10 +33,15 @@ public final class ArmociClient implements ClientModInitializer {
                 "key.armoci.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F8, "category.armoci"));
         reload = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.armoci.reload", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.armoci"));
+        configure = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.armoci.configure", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_F7, "category.armoci"));
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (toggle.wasPressed()) {
                 settings.enabled = !settings.enabled;
                 settings.save();
+            }
+            while (configure.wasPressed()) {
+                if (client.currentScreen == null) client.openScreen(new HudConfigScreen(settings));
             }
             while (reload.wasPressed()) {
                 settings.load();
@@ -56,6 +62,11 @@ public final class ArmociClient implements ClientModInitializer {
         DrawableHelper.fill(matrices, x, y, x + width, y + 17, pressed ? 0xE0FFFFFF : 0x990E1420);
         int textX = x + (width - client.textRenderer.getWidth(label)) / 2;
         client.textRenderer.draw(matrices, label, textX, y + 4, pressed ? 0x202020 : 0xFFFFFF);
+    }
+
+    private String label(KeyBinding binding) {
+        String name = binding.getBoundKeyLocalizedText().getString();
+        return name.length() > 5 ? name.substring(0, 5) : name;
     }
 
     private void render(MatrixStack matrices, float tickDelta) {
@@ -91,11 +102,16 @@ public final class ArmociClient implements ClientModInitializer {
             y = line(client, matrices, time, x, y);
         }
         if (settings.keys) {
-            key(client, matrices, "W", client.options.keyForward.isPressed(), x + 19, y, 17);
-            key(client, matrices, "A", client.options.keyLeft.isPressed(), x, y + 19, 17);
-            key(client, matrices, "S", client.options.keyBack.isPressed(), x + 19, y + 19, 17);
-            key(client, matrices, "D", client.options.keyRight.isPressed(), x + 38, y + 19, 17);
-            key(client, matrices, "SPACE", client.options.keyJump.isPressed(), x, y + 38, 55);
+            KeyBinding forward = client.options.keyForward;
+            KeyBinding left = client.options.keyLeft;
+            KeyBinding back = client.options.keyBack;
+            KeyBinding right = client.options.keyRight;
+            KeyBinding jump = client.options.keyJump;
+            key(client, matrices, label(forward), forward.isPressed(), x + 35, y, 33);
+            key(client, matrices, label(left), left.isPressed(), x, y + 19, 33);
+            key(client, matrices, label(back), back.isPressed(), x + 35, y + 19, 33);
+            key(client, matrices, label(right), right.isPressed(), x + 70, y + 19, 33);
+            key(client, matrices, label(jump), jump.isPressed(), x, y + 38, 103);
         }
     }
 }

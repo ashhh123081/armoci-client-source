@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.Path;
 import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
@@ -77,8 +79,18 @@ final class HudSettings {
         p.setProperty("y", Integer.toString(y));
         try {
             Files.createDirectories(path.getParent());
-            try (OutputStream out = Files.newOutputStream(path)) {
-                p.store(out, "Armoci Fabric preview HUD settings");
+            Path temporary = Files.createTempFile(path.getParent(), "armoci-", ".tmp");
+            try {
+                try (OutputStream out = Files.newOutputStream(temporary)) {
+                    p.store(out, "Armoci Fabric preview HUD settings");
+                }
+                try {
+                    Files.move(temporary, path, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException ex) {
+                    Files.move(temporary, path, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(temporary);
             }
         } catch (IOException ex) {
             LOGGER.warn("Could not save HUD settings", ex);

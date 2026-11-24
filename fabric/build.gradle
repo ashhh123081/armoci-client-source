@@ -25,3 +25,42 @@ processResources {
     inputs.property 'version', project.version
     filesMatching('fabric.mod.json') { expand(version: project.version) }
 }
+
+
+// Stage only the remapped Fabric artifact. No dependency on the root Forge/native build.
+tasks.register('localRelease') {
+    group = 'distribution'
+    description = 'Build and verify the Fabric JAR, then stage it for local installation.'
+    dependsOn tasks.named('build')
+    def modJar = tasks.named('remapJar').flatMap { it.archiveFile }
+    inputs.file(modJar)
+    def destination = layout.buildDirectory.dir('local-release')
+    outputs.dir(destination)
+    doLast {
+        def source = modJar.get().asFile
+        new java.util.jar.JarFile(source).withCloseable { jar ->
+            def metadata = jar.getJarEntry('fabric.mod.json')
+            if (metadata == null || jar.getJarEntry('gg/armoci/fabric/ArmociClient.class') == null) {
+                throw new GradleException('Missing Fabric mod metadata or entrypoint')
+            }
+            def parsed = new groovy.json.JsonSlurper().parse(jar.getInputStream(metadata))
+            if (parsed.id != 'armoci_fabric_preview') {
+                throw new GradleException('Unexpected mod id: ' + parsed.id)
+            }
+            jar.entries().each { entry ->
+                def name = entry.name.toLowerCase(java.util.Locale.ROOT)
+                if (name.startsWith('gg/vape/') || name.endsWith('.dll') || name.endsWith('.exe')) {
+                    throw new GradleException('Unexpected legacy payload: ' + entry.name)
+                }
+            }
+        }
+        def output = destination.get().asFile
+        output.mkdirs()
+        def target = new File(output, 'armoci-fabric-preview.jar')
+        java.nio.file.Files.copy(source.toPath(), target.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        def hash = java.security.MessageDigest.getInstance('SHA-256').digest(target.bytes).encodeHex().toString()
+        new File(output, 'SHA256SUMS').text = hash + '  ' + target.name + '\n'
+        println "Fabric JAR: ${target.absolutePath}"
+        println "SHA-256: ${hash}"
+    }
+}
